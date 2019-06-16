@@ -1,0 +1,42 @@
+{
+  "name": "simple-shared-wallet",
+  "version": "1.0.0",
+  "description": "Simple shared wallet contract enables you to store ERC20 tokens and Ethereum which can be accessed by several people.",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "truffle test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CYBRToken/simple-shared-wallet.git"
+  },
+  "keywords": [
+    "erc20",
+    "ethereum",
+    "contract",
+    "smart contract",
+    "wallet",
+    "erc721",
+    "shared",
+    "shared wallet",
+    "multi-sig"
+  ],
+  "author": "Binod Nirvan",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/CYBRToken/simple-shared-wallet/issues"
+  },
+  "homepage": "https://github.com/CYBRToken/simple-shared-wallet#readme",
+  "dependencies": {
+    "openzeppelin-solidity": "2.3.0"
+  },
+  "devDependencies": {
+    "bignumber.js": "^7.2.1",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "chai-bignumber": "^3.0.0"
+  }
+}

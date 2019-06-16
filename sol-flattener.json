@@ -1,0 +1,6 @@
+{
+  "source": "./contracts/SimpleWallet.sol",
+  "destination": "./flattened/SimpleWallet.sol",
+  "search": "./,../node_modules",
+  "removeRedundantEmptyLines": false
+}
