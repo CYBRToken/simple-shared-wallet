@@ -69,6 +69,23 @@ limitations under the License.
  */
 
 
+/*
+Copyright 2018 Binod Nirvan
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+ */
+
+
 
 
 /**
@@ -146,14 +163,59 @@ contract Ownable {
 }
 
 
+///@title Custom Ownable
+///@notice Custom ownable contract.
+contract CustomOwnable is Ownable {
+  ///The trustee wallet.
+  address private _trustee;
+
+  event TrusteeAssigned(address indexed account);
+
+  ///@notice Validates if the sender is actually the trustee.
+  modifier onlyTrustee() {
+    require(msg.sender == _trustee, "Access is denied.");
+    _;
+  }
+
+  ///@notice Assigns or changes the trustee wallet.
+  ///@param account A wallet address which will become the new trustee.
+  ///@return Returns true if the operation was successful.
+  function assignTrustee(address account) external onlyOwner returns(bool) {
+    require(account != address(0), "Please provide a valid address for trustee.");
+
+    _trustee = account;
+    return true;
+  }
+
+  ///@notice Changes the owner of this contract.
+  ///@param newOwner Specify a wallet address which will become the new owner.
+  ///@return Returns true if the operation was successful.
+  function reassignOwner(address newOwner) external onlyTrustee returns(bool) {
+    super._transferOwnership(newOwner);
+    return true;
+  }
+
+  ///@notice The trustee wallet has the power to change the owner in case of unforeseen or unavoidable situation.
+  ///@return Wallet address of the trustee account.
+  function getTrustee() external view returns(address) {
+    return _trustee;
+  }
+}
+
 ///@title Custom Admin
-///@notice This contract enables you to manage several contract administrators.
-contract CustomAdmin is Ownable {
+///@notice Custom admin contract provides features to have multiple administrators
+/// who can collective perform admin-related tasks instead of depending on the owner.
+/// &nbsp;
+/// It is assumed by default that the owner is more power than admins
+/// and therefore cannot be added to or removed from the admin list.
+contract CustomAdmin is CustomOwnable {
   ///List of administrators.
   mapping(address => bool) private _admins;
 
   event AdminAdded(address indexed account);
   event AdminRemoved(address indexed account);
+
+  event TrusteeAssigned(address indexed account);
 
   ///@notice Validates if the sender is actually an administrator.
   modifier onlyAdmin() {
@@ -163,6 +225,7 @@ contract CustomAdmin is Ownable {
 
   ///@notice Adds the specified address to the list of administrators.
   ///@param account The address to add to the administrator list.
+  ///@return Returns true if the operation was successful.
   function addAdmin(address account) external onlyAdmin returns(bool) {
     require(account != address(0), "Invalid address.");
     require(!_admins[account], "This address is already an administrator.");
@@ -177,6 +240,7 @@ contract CustomAdmin is Ownable {
 
   ///@notice Adds multiple addresses to the administrator list.
   ///@param accounts The account addresses to add to the administrator list.
+  ///@return Returns true if the operation was successful.
   function addManyAdmins(address[] calldata accounts) external onlyAdmin returns(bool) {
     for(uint8 i = 0; i < accounts.length; i++) {
       address account = accounts[i];
@@ -196,6 +260,7 @@ contract CustomAdmin is Ownable {
 
   ///@notice Removes the specified address from the list of administrators.
   ///@param account The address to remove from the administrator list.
+  ///@return Returns true if the operation was successful.
   function removeAdmin(address account) external onlyAdmin returns(bool) {
     require(account != address(0), "Invalid address.");
     require(_admins[account], "This address isn't an administrator.");
@@ -210,6 +275,7 @@ contract CustomAdmin is Ownable {
 
   ///@notice Removes multiple addresses to the administrator list.
   ///@param accounts The account addresses to add to the administrator list.
+  ///@return Returns true if the operation was successful.
   function removeManyAdmins(address[] calldata accounts) external onlyAdmin returns(bool) {
     for(uint8 i = 0; i < accounts.length; i++) {
       address account = accounts[i];
@@ -228,8 +294,10 @@ contract CustomAdmin is Ownable {
   }
 
   ///@notice Checks if an address is an administrator.
+  ///@return Returns true if the specified wallet is infact an administrator.
   function isAdmin(address account) public view returns(bool) {
     if(account == super.owner()) {
+      //The owner has all rights and privileges assigned to the admins.
       return true;
     }
 
@@ -237,22 +305,23 @@ contract CustomAdmin is Ownable {
   }
 }
 
-
-
-///@title This contract enables you to create pausable mechanism to stop in case of emergency.
+///@title Custom Pausable Contract
+///@notice This contract provides pausable mechanism to stop in case of emergency.
+/// The "pausable" features can be used and set by the contract administrators
+/// and the owner.
 contract CustomPausable is CustomAdmin {
   event Paused();
   event Unpaused();
 
   bool private _paused = false;
 
-  ///@notice Verifies whether the contract is not paused.
+  ///@notice Ensures that the contract is not paused.
   modifier whenNotPaused() {
     require(!_paused, "Sorry but the contract is paused.");
     _;
   }
 
-  ///@notice Verifies whether the contract is paused.
+  ///@notice Ensures that the contract is paused.
   modifier whenPaused() {
     require(_paused, "Sorry but the contract isn't paused.");
     _;
@@ -271,6 +340,7 @@ contract CustomPausable is CustomAdmin {
   }
 
   ///@notice Indicates if the contract is paused.
+  ///@return Returns true if this contract is paused.
   function isPaused() external view returns(bool) {
     return _paused;
   }
@@ -808,50 +878,94 @@ library SafeERC20 {
     }
 }
 
+/*
+Copyright 2018 Binod Nirvan
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+ */
+
+
+
 
 
 ///@title Capped Transfer
 ///@author Binod Nirvan
-///@notice Provides rules on the maximum number of tokens which can be sent
-contract TransferBase is CustomPausable {
+///@notice The capped transfer contract outlines the rules on the maximum amount of ERC20 or Ether transfer for each transaction.
+contract CappedTransfer is CustomPausable {
+  event CapChanged(uint256 maximumTransfer, uint256 maximumTransferWei, uint256 oldMaximumTransfer, uint256 oldMaximumTransferWei);
+
+  //Zero means unlimited transfer
+  uint256 private _maximumTransfer = 0;
+  uint256 private _maximumTransferWei = 0;
+
+  ///@notice Ensures that the requested ERC20 transfer amount is within the maximum allowed limit.
+  ///@param amount The amount being requested to be transferred out of this contract.
+  ///@return Returns true if the transfer request is valid and acceptable.
+  function checkIfValidTransfer(uint256 amount) public view returns(bool) {
+    require(amount > 0, "Access is denied.");
+
+    if(_maximumTransfer > 0) {
+      require(amount <= _maximumTransfer, "Sorry but the amount you're transferring is too much.");
+    }
+
+    return true;
+  }
+
+  ///@notice Ensures that the requested wei transfer amount is within the maximum allowed limit.
+  ///@param amount The Ether wei unit amount being requested to be transferred out of this contract.
+  ///@return Returns true if the transfer request is valid and acceptable.
+  function checkIfValidWeiTransfer(uint256 amount) public view returns(bool) {
+    require(amount > 0, "Access is denied.");
+
+    if(_maximumTransferWei > 0) {
+      require(amount <= _maximumTransferWei, "Sorry but the amount you're transferring is too much.");
+    }
+
+    return true;
+  }
+
+  ///@notice Sets the maximum cap for a single ERC20 and Ether transfer.
+  ///@return Returns true if the operation was successful.
+  function setCap(uint256 cap, uint256 weiCap) external onlyOwner whenNotPaused returns(bool) {
+    emit CapChanged(cap, weiCap, _maximumTransfer, _maximumTransferWei);
+
+    _maximumTransfer = cap;
+    _maximumTransferWei = weiCap;
+    return true;
+  }
+
+  ///@notice Gets the transfer cap defined in this contract.
+  ///@return Returns maximum allowed value for a single transfer operation of ERC20 token and Ethereum.
+  function getCap() external view returns(uint256, uint256) {
+    return (_maximumTransfer, _maximumTransferWei);
+  }
+}
+
+///@title Transfer Base Contract
+///@author Binod Nirvan
+///@notice The base contract which contains features related to token transfers.
+contract TransferBase is CappedTransfer {
   using SafeMath for uint256;
   using SafeERC20 for ERC20;
 
   event TransferPerformed(address indexed token, address indexed transferredBy, address indexed destination, uint256 amount);
   event EtherTransferPerformed(address indexed transferredBy, address indexed destination, uint256 amount);
 
-  //Zero means unlimited transfer
-  uint256 internal maximumTransfer = 0;
-  uint256 internal maximumTransferWei = 0;
-
-  function checkIfValidTransfer(uint256 amount) internal view returns(bool) {
-    require(amount > 0, "Access is denied.");
-
-    if(maximumTransfer > 0) {
-      require(amount <= maximumTransfer, "Sorry but the amount you're transferring is too much.");
-    }
-
-    return true;
-  }
-
-  function checkIfValidWeiTransfer(uint256 amount) internal view returns(bool) {
-    require(amount > 0, "Access is denied.");
-
-    if(maximumTransferWei > 0) {
-      require(amount <= maximumTransferWei, "Sorry but the amount you're transferring is too much.");
-    }
-
-    return true;
-  }
-
-  function setCap(uint256 cap) external onlyOwner {
-    maximumTransfer = cap;
-  }
-
   ///@notice Allows the sender to transfer tokens to the beneficiary.
-  ///@param token The ERC20 token to bulk transfer.
+  ///@param token The ERC20 token to transfer.
   ///@param destination The destination wallet address to send funds to.
-  ///@param amount The respective amount of funds to send to the specified addresses.
+  ///@param amount The amount of tokens to send to the specified address.
+  ///@return Returns true if the operation was successful.
   function transferTokens(address token, address destination, uint256 amount)
   external onlyAdmin whenNotPaused
   returns(bool) {
@@ -875,7 +989,8 @@ contract TransferBase is CustomPausable {
 
   ///@notice Allows the sender to transfer Ethers to the beneficiary.
   ///@param destination The destination wallet address to send funds to.
-  ///@param amount The respective amount of funds to send to the specified addresses.
+  ///@param amount The amount of Ether in wei to send to the specified address.
+  ///@return Returns true if the operation was successful.
   function transferEthers(address payable destination, uint256 amount)
   external onlyAdmin whenNotPaused
   returns(bool) {
@@ -894,17 +1009,31 @@ contract TransferBase is CustomPausable {
     emit EtherTransferPerformed(msg.sender, destination, amount);
     return true;
   }
+
+  ///@return Returns balance of the ERC20 token held by this contract.
+  function tokenBalanceOf(address token) external view returns(uint256) {
+    ERC20 erc20 = ERC20(token);
+    return erc20.balanceOf(address(this));
+  }
+
+  ///@notice Accepts incoming funds
+  function () external payable whenNotPaused {
+    //nothing to do
+  }
+
 }
 
 ///@title Bulk Transfer Contract
 ///@author Binod Nirvan
-///@notice This contract provides administrators tools and features to perform bulk transfers.
+///@notice The bulk transfer contract enables administrators to transfer an ERC20 token
+/// or Ethereum in batches. Every single feature of this contract is strictly restricted to be used by admin(s) only.
 contract BulkTransfer is TransferBase {
   event BulkTransferPerformed(address indexed token, address indexed transferredBy, uint256 length, uint256 totalAmount);
   event EtherBulkTransferPerformed(address indexed transferredBy, uint256 length, uint256 totalAmount);
 
-  ///@notice Returns the sum of supplied values.
+  ///@notice Creates a sum total of the supplied values.
   ///@param values The collection of values to create the sum from.
+  ///@return Returns the sum total of the supplied values.
   function sumOf(uint256[] memory values) private pure returns(uint256) {
     uint256 total = 0;
 
@@ -915,10 +1044,12 @@ contract BulkTransfer is TransferBase {
     return total;
   }
 
-  ///@notice Allows the sender to perform ERC20 bulk transfer operation.
+
+  ///@notice Allows the requester to perform ERC20 bulk transfer operation.
   ///@param token The ERC20 token to bulk transfer.
   ///@param destinations The destination wallet addresses to send funds to.
   ///@param amounts The respective amount of funds to send to the specified addresses.
+  ///@return Returns true if the operation was successful.
   function bulkTransfer(address token, address[] calldata destinations, uint256[] calldata amounts)
   external onlyAdmin whenNotPaused
   returns(bool) {
@@ -927,6 +1058,8 @@ contract BulkTransfer is TransferBase {
     //Saving gas by first determining if the sender actually has sufficient balance
     //to post this transaction.
     uint256 requiredBalance = sumOf(amounts);
+
+    //Verifying whether or not this transaction exceeds the maximum allowed ERC20 transfer cap.
     require(checkIfValidTransfer(requiredBalance), "Access is denied.");
 
     ERC20 erc20 = ERC20(token);
@@ -934,7 +1067,7 @@ contract BulkTransfer is TransferBase {
     require
     (
       erc20.balanceOf(address(this)) >= requiredBalance,
-      "You don't have sufficient funds to transfer amount that large."
+      "You don't have sufficient funds to transfer amount this big."
     );
 
 
@@ -942,15 +1075,15 @@ contract BulkTransfer is TransferBase {
       erc20.safeTransfer(destinations[i], amounts[i]);
     }
 
-
     emit BulkTransferPerformed(token, msg.sender, destinations.length, requiredBalance);
     return true;
   }
 
 
-  ///@notice Allows the sender to perform Ethereum bulk transfer operation.
+  ///@notice Allows the requester to perform Ethereum bulk transfer operation.
   ///@param destinations The destination wallet addresses to send funds to.
   ///@param amounts The respective amount of funds to send to the specified addresses.
+  ///@return Returns true if the operation was successful.
   function bulkTransferEther(address[] calldata destinations, uint256[] calldata amounts)
   external onlyAdmin whenNotPaused
   returns(bool) {
@@ -959,12 +1092,14 @@ contract BulkTransfer is TransferBase {
     //Saving gas by first determining if the sender actually has sufficient balance
     //to post this transaction.
     uint256 requiredBalance = sumOf(amounts);
+
+    //Verifying whether or not this transaction exceeds the maximum allowed Ethereum transfer cap.
     require(checkIfValidWeiTransfer(requiredBalance), "Access is denied.");
 
     require
     (
       address(this).balance >= requiredBalance,
-      "You don't have sufficient funds to transfer amount that large."
+      "You don't have sufficient funds to transfer amount this big."
     );
 
 
@@ -998,9 +1133,10 @@ limitations under the License.
 
 
 
+//@audit OK
 ///@title Reclaimable Contract
 ///@author Binod Nirvan
-///@notice Reclaimable contract enables the administrators
+///@notice Reclaimable contract enables the owner
 ///to reclaim accidentally sent Ethers and ERC20 token(s)
 ///to this contract.
 contract Reclaimable is CustomPausable {
@@ -1021,13 +1157,4 @@ contract Reclaimable is CustomPausable {
 }
 
 contract SimpleWallet is BulkTransfer, Reclaimable {
-  function tokenBalanceOf(address token) external view returns(uint256) {
-    ERC20 erc20 = ERC20(token);
-    return erc20.balanceOf(address(this));
-  }
-
-  ///@notice Accepts incoming funds
-  function () external payable {
-    //nothing to do
-  }
 }
