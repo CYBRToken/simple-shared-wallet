@@ -1,27 +1,36 @@
-# Simple Token (SimpleToken.sol)
+# ForceEther.sol
 
-View Source: [contracts/SimpleToken.sol](../contracts/SimpleToken.sol)
+View Source: [contracts/Mocks/ForceEther.sol](../contracts/Mocks/ForceEther.sol)
 
-**↗ Extends: [ERC20](ERC20.md)**
-
-**SimpleToken**
-
-Does not hold any signifiance except for testing purpose only.
+**ForceEther**
 
 ## Functions
 
 - [()](#)
+- [destroyAndSend(address payable _recipient)](#destroyandsend)
 
 ### 
 
 ```js
-function () public nonpayable
+function () public payable
 ```
 
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
+
+### destroyAndSend
+
+```js
+function destroyAndSend(address payable _recipient) public nonpayable
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| _recipient | address payable |  | 
 
 ## Contracts
 

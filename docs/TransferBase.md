@@ -20,6 +20,8 @@ event EtherTransferPerformed(address indexed transferredBy, address indexed dest
 
 - [transferTokens(address token, address destination, uint256 amount)](#transfertokens)
 - [transferEthers(address payable destination, uint256 amount)](#transferethers)
+- [tokenBalanceOf(address token)](#tokenbalanceof)
+- [()](#)
 
 ### transferTokens
 
@@ -40,7 +42,7 @@ Returns true if the operation was successful.
 | ------------- |------------- | -----|
 | token | address | The ERC20 token to transfer. | 
 | destination | address | The destination wallet address to send funds to. | 
-| amount | uint256 | The amount of tokens to send to the specified addresses. | 
+| amount | uint256 | The amount of tokens to send to the specified address. | 
 
 ### transferEthers
 
@@ -60,7 +62,37 @@ Returns true if the operation was successful.
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 | destination | address payable | The destination wallet address to send funds to. | 
-| amount | uint256 | The amount of Ether in wei to send to the specified addresses. | 
+| amount | uint256 | The amount of Ether in wei to send to the specified address. | 
+
+### tokenBalanceOf
+
+```js
+function tokenBalanceOf(address token) external view
+returns(uint256)
+```
+
+**Returns**
+
+Returns balance of the ERC20 token held by this contract.
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
+| token | address |  | 
+
+### 
+
+Accepts incoming funds
+
+```js
+function () external payable whenNotPaused 
+```
+
+**Arguments**
+
+| Name        | Type           | Description  |
+| ------------- |------------- | -----|
 
 ## Contracts
 
@@ -68,8 +100,10 @@ Returns true if the operation was successful.
 * [BulkTransfer](BulkTransfer.md)
 * [CappedTransfer](CappedTransfer.md)
 * [CustomAdmin](CustomAdmin.md)
+* [CustomOwnable](CustomOwnable.md)
 * [CustomPausable](CustomPausable.md)
 * [ERC20](ERC20.md)
+* [ForceEther](ForceEther.md)
 * [IERC20](IERC20.md)
 * [Migrations](Migrations.md)
 * [Ownable](Ownable.md)

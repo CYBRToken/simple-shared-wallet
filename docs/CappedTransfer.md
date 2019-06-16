@@ -36,7 +36,7 @@ event CapChanged(uint256  maximumTransfer, uint256  maximumTransferWei, uint256 
 Ensures that the requested ERC20 transfer amount is within the maximum allowed limit.
 
 ```js
-function checkIfValidTransfer(uint256 amount) internal view
+function checkIfValidTransfer(uint256 amount) public view
 returns(bool)
 ```
 
@@ -55,7 +55,7 @@ Returns true if the transfer request is valid and acceptable.
 Ensures that the requested wei transfer amount is within the maximum allowed limit.
 
 ```js
-function checkIfValidWeiTransfer(uint256 amount) internal view
+function checkIfValidWeiTransfer(uint256 amount) public view
 returns(bool)
 ```
 
@@ -113,8 +113,10 @@ Returns maximum allowed value for a single transfer operation of ERC20 token and
 * [BulkTransfer](BulkTransfer.md)
 * [CappedTransfer](CappedTransfer.md)
 * [CustomAdmin](CustomAdmin.md)
+* [CustomOwnable](CustomOwnable.md)
 * [CustomPausable](CustomPausable.md)
 * [ERC20](ERC20.md)
+* [ForceEther](ForceEther.md)
 * [IERC20](IERC20.md)
 * [Migrations](Migrations.md)
 * [Ownable](Ownable.md)

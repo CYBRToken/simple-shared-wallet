@@ -2,7 +2,7 @@
 
 View Source: [openzeppelin-solidity/contracts/ownership/Ownable.sol](../openzeppelin-solidity/contracts/ownership/Ownable.sol)
 
-**↘ Derived Contracts: [CustomAdmin](CustomAdmin.md)**
+**↘ Derived Contracts: [CustomOwnable](CustomOwnable.md)**
 
 **Ownable**
 
@@ -145,8 +145,10 @@ function _transferOwnership(address newOwner) internal nonpayable
 * [BulkTransfer](BulkTransfer.md)
 * [CappedTransfer](CappedTransfer.md)
 * [CustomAdmin](CustomAdmin.md)
+* [CustomOwnable](CustomOwnable.md)
 * [CustomPausable](CustomPausable.md)
 * [ERC20](ERC20.md)
+* [ForceEther](ForceEther.md)
 * [IERC20](IERC20.md)
 * [Migrations](Migrations.md)
 * [Ownable](Ownable.md)

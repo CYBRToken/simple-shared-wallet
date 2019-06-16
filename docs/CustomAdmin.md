@@ -2,7 +2,7 @@
 
 View Source: [contracts/CustomAdmin.sol](../contracts/CustomAdmin.sol)
 
-**↗ Extends: [Ownable](Ownable.md)**
+**↗ Extends: [CustomOwnable](CustomOwnable.md)**
 **↘ Derived Contracts: [CustomPausable](CustomPausable.md)**
 
 **CustomAdmin**
@@ -18,7 +18,6 @@ Custom admin contract provides features to have multiple administrators
 
 ```js
 mapping(address => bool) private _admins;
-address private _trustee;
 
 ```
 
@@ -33,7 +32,6 @@ event TrusteeAssigned(address indexed account);
 ## Modifiers
 
 - [onlyAdmin](#onlyadmin)
-- [onlyTrustee](#onlytrustee)
 
 ### onlyAdmin
 
@@ -48,67 +46,13 @@ modifier onlyAdmin() internal
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
 
-### onlyTrustee
-
-Validates if the sender is actually the trustee.
-
-```js
-modifier onlyTrustee() internal
-```
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
 ## Functions
 
-- [assignTrustee(address account)](#assigntrustee)
-- [reassignOwner(address newOwner)](#reassignowner)
 - [addAdmin(address account)](#addadmin)
 - [addManyAdmins(address[] accounts)](#addmanyadmins)
 - [removeAdmin(address account)](#removeadmin)
 - [removeManyAdmins(address[] accounts)](#removemanyadmins)
 - [isAdmin(address account)](#isadmin)
-- [getTrustee()](#gettrustee)
-
-### assignTrustee
-
-Assigns or changes the trustee wallet.
-
-```js
-function assignTrustee(address account) external nonpayable onlyOwner 
-returns(bool)
-```
-
-**Returns**
-
-Returns true if the operation was successful.
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| account | address | A wallet address which will become the new trustee. | 
-
-### reassignOwner
-
-Changes the owner of this contract.
-
-```js
-function reassignOwner(address newOwner) external nonpayable onlyTrustee 
-returns(bool)
-```
-
-**Returns**
-
-Returns true if the operation was successful.
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-| newOwner | address | Specify a wallet address which will become the new owner. | 
 
 ### addAdmin
 
@@ -205,32 +149,16 @@ Returns true if the specified wallet is infact an administrator.
 | ------------- |------------- | -----|
 | account | address |  | 
 
-### getTrustee
-
-The trustee wallet has the power to change the owner in case of unforeseen or unavoidable situation.
-
-```js
-function getTrustee() external view
-returns(address)
-```
-
-**Returns**
-
-Wallet address of the trustee account.
-
-**Arguments**
-
-| Name        | Type           | Description  |
-| ------------- |------------- | -----|
-
 ## Contracts
 
 * [Address](Address.md)
 * [BulkTransfer](BulkTransfer.md)
 * [CappedTransfer](CappedTransfer.md)
 * [CustomAdmin](CustomAdmin.md)
+* [CustomOwnable](CustomOwnable.md)
 * [CustomPausable](CustomPausable.md)
 * [ERC20](ERC20.md)
+* [ForceEther](ForceEther.md)
 * [IERC20](IERC20.md)
 * [Migrations](Migrations.md)
 * [Ownable](Ownable.md)
