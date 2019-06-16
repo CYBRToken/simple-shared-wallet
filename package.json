@@ -31,10 +31,12 @@
   },
   "homepage": "https://github.com/CYBRToken/simple-shared-wallet#readme",
   "dependencies": {
-    "openzeppelin-solidity": "2.3.0"
+    "bignumber.js": "^9.0.0",
+    "openzeppelin-solidity": "2.3.0",
+    "pify": "^4.0.1",
+    "web3": "^0.20.6"
   },
   "devDependencies": {
-    "bignumber.js": "^7.2.1",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "chai-bignumber": "^3.0.0"

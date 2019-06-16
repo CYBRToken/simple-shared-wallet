@@ -78,4 +78,16 @@ contract TransferBase is CappedTransfer {
     emit EtherTransferPerformed(msg.sender, destination, amount);
     return true;
   }
+
+  ///@return Returns balance of the ERC20 token held by this contract.
+  function tokenBalanceOf(address token) external view returns(uint256) {
+    ERC20 erc20 = ERC20(token);
+    return erc20.balanceOf(address(this));
+  }
+
+  ///@notice Accepts incoming funds
+  function () external payable whenNotPaused {
+    //nothing to do
+  }
+
 }

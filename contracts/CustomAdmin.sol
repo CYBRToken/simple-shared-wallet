@@ -15,7 +15,7 @@ limitations under the License.
  */
 
 pragma solidity >=0.4.21 <0.6.0;
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "./CustomOwnable.sol";
 
 ///@title Custom Admin
 ///@notice Custom admin contract provides features to have multiple administrators
@@ -23,12 +23,9 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 /// &nbsp;
 /// It is assumed by default that the owner is more power than admins
 /// and therefore cannot be added to or removed from the admin list.
-contract CustomAdmin is Ownable {
+contract CustomAdmin is CustomOwnable {
   ///List of administrators.
   mapping(address => bool) private _admins;
-
-  ///The trustee wallet.
-  address private _trustee;
 
   event AdminAdded(address indexed account);
   event AdminRemoved(address indexed account);
@@ -39,30 +36,6 @@ contract CustomAdmin is Ownable {
   modifier onlyAdmin() {
     require(isAdmin(msg.sender), "Access is denied.");
     _;
-  }
-
-  ///@notice Validates if the sender is actually the trustee.
-  modifier onlyTrustee() {
-    require(msg.sender == _trustee, "Access is denied.");
-    _;
-  }
-
-  ///@notice Assigns or changes the trustee wallet.
-  ///@param account A wallet address which will become the new trustee.
-  ///@return Returns true if the operation was successful.
-  function assignTrustee(address account) external onlyOwner returns(bool) {
-    require(account != address(0), "Please provide a valid address for trustee.");
-
-    _trustee = account;
-    return true;
-  }
-
-  ///@notice Changes the owner of this contract.
-  ///@param newOwner Specify a wallet address which will become the new owner.
-  ///@return Returns true if the operation was successful.
-  function reassignOwner(address newOwner) external onlyTrustee returns(bool) {
-    super._transferOwnership(newOwner);
-    return true;
   }
 
   ///@notice Adds the specified address to the list of administrators.
@@ -144,11 +117,5 @@ contract CustomAdmin is Ownable {
     }
 
     return _admins[account];
-  }
-
-  ///@notice The trustee wallet has the power to change the owner in case of unforeseen or unavoidable situation.
-  ///@return Wallet address of the trustee account.
-  function getTrustee() external view returns(address) {
-    return _trustee;
   }
 }

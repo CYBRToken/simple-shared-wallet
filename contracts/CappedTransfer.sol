@@ -31,7 +31,7 @@ contract CappedTransfer is CustomPausable {
   ///@notice Ensures that the requested ERC20 transfer amount is within the maximum allowed limit.
   ///@param amount The amount being requested to be transferred out of this contract.
   ///@return Returns true if the transfer request is valid and acceptable.
-  function checkIfValidTransfer(uint256 amount) internal view returns(bool) {
+  function checkIfValidTransfer(uint256 amount) public view returns(bool) {
     require(amount > 0, "Access is denied.");
 
     if(_maximumTransfer > 0) {
@@ -44,7 +44,7 @@ contract CappedTransfer is CustomPausable {
   ///@notice Ensures that the requested wei transfer amount is within the maximum allowed limit.
   ///@param amount The Ether wei unit amount being requested to be transferred out of this contract.
   ///@return Returns true if the transfer request is valid and acceptable.
-  function checkIfValidWeiTransfer(uint256 amount) internal view returns(bool) {
+  function checkIfValidWeiTransfer(uint256 amount) public view returns(bool) {
     require(amount > 0, "Access is denied.");
 
     if(_maximumTransferWei > 0) {
