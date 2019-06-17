@@ -12,6 +12,11 @@
     "solium": "solium -d contracts",
     "coverage": "./node_modules/.bin/solidity-coverage"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "sol-flattener ./contracts/SimpleToken.sol ./flattened/SimpleToken.sol .,../node_modules && sol-flattener ./contracts/SimpleWallet.sol ./flattened/SimpleWallet.sol .,../node_modules && rm -r ./build && rm -r ./docs && truffle compile && solidoc"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/CYBRToken/simple-shared-wallet.git"
@@ -43,6 +48,7 @@
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "chai-bignumber": "^3.0.0",
+    "husky": "^2.4.1",
     "solidity-coverage": "^0.5.11"
   }
 }

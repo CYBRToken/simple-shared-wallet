@@ -27,9 +27,13 @@ contract("Custom Pausable", function(accounts) {
         .should.be.rejectedWith(EVMRevert);
 
       await pausable.addAdmin(accounts[2]);
-      await pausable.pause({
+
+      const { logs } = await pausable.pause({
         from: accounts[2]
       });
+
+      assert.equal(logs.length, 1);
+      assert.equal(logs[0].event, "Paused");
 
       assert.equal(await pausable.isPaused(), true);
     });
@@ -55,9 +59,13 @@ contract("Custom Pausable", function(accounts) {
         .should.be.rejectedWith(EVMRevert);
       assert.equal(await pausable.isPaused(), true);
 
-      await pausable.unpause({
+      const { logs } = await pausable.unpause({
         from: admins[1]
       });
+
+      assert.equal(logs.length, 1);
+      assert.equal(logs[0].event, "Unpaused");
+
       assert.equal(await pausable.isPaused(), false);
     });
   });

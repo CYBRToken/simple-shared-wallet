@@ -163,9 +163,21 @@ contract("TransferBase", function(accounts) {
 
       await contract.unpause();
 
-      await contract.transferTokens(tokenAddress, accounts[9], ether(100), {
-        from: accounts[2]
-      });
+      const { logs } = await contract.transferTokens(
+        tokenAddress,
+        accounts[9],
+        ether(100),
+        {
+          from: accounts[2]
+        }
+      );
+
+      assert.equal(logs.length, 1);
+      assert.equal(logs[0].event, "TransferPerformed");
+      assert.equal(logs[0].args.token, tokenAddress);
+      assert.equal(logs[0].args.transferredBy, accounts[2]);
+      assert.equal(logs[0].args.destination, accounts[9]);
+      assert.equal(logs[0].args.amount.toString(), ether(100).toString());
 
       let balanceOf = await token.balanceOf(accounts[9]);
       assert.equal(balanceOf.toString(), ether(100).toString());
@@ -202,9 +214,19 @@ contract("TransferBase", function(accounts) {
         .should.be.rejectedWith(EVMRevert);
       await contract.unpause();
 
-      await contract.transferEthers(randomAccount.address, ether(1), {
-        from: accounts[2]
-      });
+      const { logs } = await contract.transferEthers(
+        randomAccount.address,
+        ether(1),
+        {
+          from: accounts[2]
+        }
+      );
+
+      assert.equal(logs.length, 1);
+      assert.equal(logs[0].event, "EtherTransferPerformed");
+      assert.equal(logs[0].args.transferredBy, accounts[2]);
+      assert.equal(logs[0].args.destination, randomAccount.address);
+      assert.equal(logs[0].args.amount.toString(), ether(1).toString());
 
       balance = await web3.eth.getBalance(randomAccount.address);
       assert.equal(balance.toString(), ether(1).toString());

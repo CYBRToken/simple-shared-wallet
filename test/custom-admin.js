@@ -21,7 +21,9 @@ contract("Custom Admin", function(accounts) {
 
     it("must not allow zero address to be added as an admin.", async () => {
       const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-      await customAdmin.addAdmin(ZERO_ADDRESS).should.be.rejectedWith(EVMRevert);
+      await customAdmin
+        .addAdmin(ZERO_ADDRESS)
+        .should.be.rejectedWith(EVMRevert);
     });
 
     it("must not allow the owner to be added to the administrator list.", async () => {
@@ -44,14 +46,18 @@ contract("Custom Admin", function(accounts) {
       await customAdmin.addAdmin(accounts[1]).should.be.rejectedWith(EVMRevert);
 
       await customAdmin.addAdmin(accounts[2], {
-        from: accounts[1],
+        from: accounts[1]
       });
 
       await customAdmin.addAdmin(accounts[2]).should.be.rejectedWith(EVMRevert);
 
-      await customAdmin.addAdmin(accounts[3], {
-        from: accounts[2],
+      const { logs } = await customAdmin.addAdmin(accounts[3], {
+        from: accounts[2]
       });
+
+      assert.equal(logs.length, 1);
+      assert.equal(logs[0].event, "AdminAdded");
+      assert.equal(logs[0].args.account, accounts[3]);
 
       assert.equal(await customAdmin.isAdmin(accounts[0]), true);
       assert.equal(await customAdmin.isAdmin(accounts[1]), true);
@@ -73,10 +79,10 @@ contract("Custom Admin", function(accounts) {
 
       await customAdmin.addAdmin(accounts[1]);
       await customAdmin.addAdmin(accounts[2], {
-        from: accounts[1],
+        from: accounts[1]
       });
       await customAdmin.addAdmin(accounts[3], {
-        from: accounts[2],
+        from: accounts[2]
       });
 
       assert.equal(await customAdmin.isAdmin(accounts[0]), true);
@@ -86,13 +92,13 @@ contract("Custom Admin", function(accounts) {
 
       //suicide
       await customAdmin.removeAdmin(accounts[3], {
-        from: accounts[3],
+        from: accounts[3]
       });
       await customAdmin.removeAdmin(accounts[2], {
-        from: accounts[2],
+        from: accounts[2]
       });
       await customAdmin.removeAdmin(accounts[1], {
-        from: accounts[1],
+        from: accounts[1]
       });
 
       //The owner cannot be removed from this list.
@@ -101,29 +107,42 @@ contract("Custom Admin", function(accounts) {
       await customAdmin.addManyAdmins([accounts[1], accounts[2], accounts[3]]);
 
       await customAdmin.removeAdmin(accounts[3], {
-        from: accounts[1],
+        from: accounts[1]
       });
       await customAdmin
         .removeAdmin(accounts[2], {
-          from: accounts[3],
+          from: accounts[3]
         })
         .should.be.rejectedWith(EVMRevert); //you're no longer an administrator
       await customAdmin.removeAdmin(accounts[2], {
-        from: accounts[1],
+        from: accounts[1]
       });
-      await customAdmin.removeAdmin(accounts[1], {
-        from: accounts[1],
+
+      const { logs } = await customAdmin.removeAdmin(accounts[1], {
+        from: accounts[1]
       });
+
+      assert.equal(logs.length, 1);
+      assert.equal(logs[0].event, "AdminRemoved");
+      assert.equal(logs[0].args.account, accounts[1]);
 
       await customAdmin
         .addAdmin(accounts[2], {
-          from: accounts[1],
+          from: accounts[1]
         })
         .should.be.rejectedWith(EVMRevert); //you're no longer an administrator
     });
 
     it("must correctly add many admins.", async () => {
-      await customAdmin.addManyAdmins([accounts[1], accounts[2], accounts[3], accounts[5]]);
+      const newAdmins = [accounts[1], accounts[2], accounts[3], accounts[5]];
+      const { logs } = await customAdmin.addManyAdmins(newAdmins);
+
+      assert.equal(logs.length, newAdmins.length);
+
+      for (let i = 0; i < newAdmins.length; i++) {
+        assert.equal(logs[i].event, "AdminAdded");
+        assert.equal(logs[i].args.account, newAdmins[i]);
+      }
 
       assert.equal(await customAdmin.isAdmin(accounts[0]), true);
       assert.equal(await customAdmin.isAdmin(accounts[1]), true);
@@ -143,7 +162,7 @@ contract("Custom Admin", function(accounts) {
         accounts[6],
         accounts[7],
         accounts[8],
-        accounts[9],
+        accounts[9]
       ]);
 
       assert.equal(await customAdmin.isAdmin(accounts[0]), true);
@@ -157,7 +176,16 @@ contract("Custom Admin", function(accounts) {
       assert.equal(await customAdmin.isAdmin(accounts[8]), true);
       assert.equal(await customAdmin.isAdmin(accounts[9]), true);
 
-      await customAdmin.removeManyAdmins([accounts[1], accounts[5], accounts[7], accounts[8]]);
+      const toRemove = [accounts[1], accounts[5], accounts[7], accounts[8]];
+
+      const { logs } = await customAdmin.removeManyAdmins(toRemove);
+
+      assert.equal(logs.length, toRemove.length);
+
+      for (let i = 0; i < toRemove.length; i++) {
+        assert.equal(logs[i].event, "AdminRemoved");
+        assert.equal(logs[i].args.account, toRemove[i]);
+      }
 
       assert.equal(await customAdmin.isAdmin(accounts[0]), true);
       assert.equal(await customAdmin.isAdmin(accounts[1]), false);

@@ -118,12 +118,21 @@ contract("Bulk Transfer", function(accounts) {
 
       //Can transfer when not paused
 
-      await contract.bulkTransfer(
+      const { logs } = await contract.bulkTransfer(
         tokenAddress,
         getTransferInfo().destinations,
         getTransferInfo().balances.map(x => ether(x)),
         { from: accounts[2] }
       );
+
+      const total = ether(getTransferInfo().balances.reduce((a, c) => a + c));
+
+      assert.equal(logs.length, 1);
+      assert.equal(logs[0].event, "BulkTransferPerformed");
+      assert.equal(logs[0].args.token, tokenAddress);
+      assert.equal(logs[0].args.transferredBy, accounts[2]);
+      assert.equal(logs[0].args.length, getTransferInfo().destinations.length);
+      assert.equal(logs[0].args.totalAmount.toString(), total.toString());
     });
 
     it("must reject bulk Ether ether transfer exceeding allowed cap.", async () => {
@@ -175,11 +184,19 @@ contract("Bulk Transfer", function(accounts) {
       contract.unpause();
 
       //Can transfer when not paused
-      await contract.bulkTransferEther(
+      const { logs } = await contract.bulkTransferEther(
         getTransferInfo().destinations,
         getTransferInfo().balances.map(x => ether(x)),
         { from: accounts[2] }
       );
+
+      const total = ether(getTransferInfo().balances.reduce((a, c) => a + c));
+
+      assert.equal(logs.length, 1);
+      assert.equal(logs[0].event, "EtherBulkTransferPerformed");
+      assert.equal(logs[0].args.transferredBy, accounts[2]);
+      assert.equal(logs[0].args.length, getTransferInfo().destinations.length);
+      assert.equal(logs[0].args.totalAmount.toString(), total.toString());
     });
   });
 });

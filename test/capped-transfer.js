@@ -32,8 +32,15 @@ contract("Custom Ownable", function(accounts) {
     });
 
     it("must correctly set the transfer cap.", async () => {
-      await cappedTransfer.setCap(10000, 20000);
+      const { logs } = await cappedTransfer.setCap(10000, 20000);
       const result = await cappedTransfer.getCap();
+
+      assert.equal(logs.length, 1);
+      assert.equal(logs[0].event, "CapChanged");
+      assert.equal(logs[0].args.maximumTransfer, 10000);
+      assert.equal(logs[0].args.maximumTransferWei, 20000);
+      assert.equal(logs[0].args.oldMaximumTransfer, 0);
+      assert.equal(logs[0].args.oldMaximumTransferWei, 0);
 
       assert.equal(new BigNumber(result["0"]).toNumber(), 10000);
       assert.equal(new BigNumber(result["1"]).toNumber(), 20000);

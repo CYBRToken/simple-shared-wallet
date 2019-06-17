@@ -20,7 +20,12 @@ contract("Custom Ownable", function(accounts) {
       await customOwnable.assignTrustee(accounts[1]);
       assert.equal(await customOwnable.getTrustee(), accounts[1]);
 
-      await customOwnable.assignTrustee(accounts[2]);
+      const { logs } = await customOwnable.assignTrustee(accounts[2]);
+
+      assert.equal(logs.length, 1);
+      assert.equal(logs[0].event, "TrusteeAssigned");
+      assert.equal(logs[0].args.account, accounts[2]);
+
       assert.equal(await customOwnable.getTrustee(), accounts[2]);
     });
 
