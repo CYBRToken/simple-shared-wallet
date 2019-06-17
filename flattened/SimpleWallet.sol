@@ -184,6 +184,7 @@ contract CustomOwnable is Ownable {
     require(account != address(0), "Please provide a valid address for trustee.");
 
     _trustee = account;
+    emit TrusteeAssigned(account);
     return true;
   }
 
