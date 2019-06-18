@@ -10,11 +10,12 @@
     "test": "truffle test",
     "solhint": "solhint \"contracts/**/*.sol\"",
     "solium": "solium -d contracts",
-    "coverage": "./node_modules/.bin/solidity-coverage"
+    "coverage": "./node_modules/.bin/solidity-coverage",
+    "pre-commit": "sol-flattener ./contracts/SimpleToken.sol ./flattened/SimpleToken.sol .,../node_modules && sol-flattener ./contracts/SimpleWallet.sol ./flattened/SimpleWallet.sol .,../node_modules && rm -r ./build && rm -r ./docs && truffle compile && solidoc"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "sol-flattener ./contracts/SimpleToken.sol ./flattened/SimpleToken.sol .,../node_modules && sol-flattener ./contracts/SimpleWallet.sol ./flattened/SimpleWallet.sol .,../node_modules && rm -r ./build && rm -r ./docs && truffle compile && solidoc"
+      "pre-commit": "npm run pre-commit"
     }
   },
   "repository": {

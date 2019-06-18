@@ -89,5 +89,4 @@ contract TransferBase is CappedTransfer {
   function () external payable whenNotPaused {
     //nothing to do
   }
-
 }

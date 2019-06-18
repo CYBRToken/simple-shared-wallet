@@ -18,7 +18,6 @@ import "openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol";
 import "./CustomPausable.sol";
 
 
-//@audit OK
 ///@title Reclaimable Contract
 ///@author Binod Nirvan
 ///@notice Reclaimable contract enables the owner

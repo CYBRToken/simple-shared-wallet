@@ -67,6 +67,11 @@ solidoc
 
 [Continue to Full Documentation](docs/SimpleWallet.md)
 
+**Who is Using This?**
+
+- [CYBR Shared Wallet](https://etherscan.io/address/0x56aab5a59052ab3aed8287023af6c1f7b060aa31)
+- [xCrypt Shared Wallet](https://etherscan.io/address/0xe572b13c34f50e24a74c4494f9a74141a909dd84)
+
 ## You May Also Like
 
 - [ERC20 Snapshot Generator](https://github.com/binodnp/erc20-snapshot)

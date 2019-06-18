@@ -1021,7 +1021,6 @@ contract TransferBase is CappedTransfer {
   function () external payable whenNotPaused {
     //nothing to do
   }
-
 }
 
 ///@title Bulk Transfer Contract
@@ -1134,7 +1133,6 @@ limitations under the License.
 
 
 
-//@audit OK
 ///@title Reclaimable Contract
 ///@author Binod Nirvan
 ///@notice Reclaimable contract enables the owner
